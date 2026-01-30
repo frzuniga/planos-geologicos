@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Geological Plane Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        .slider-container {
+            position: relative;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 40px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 70px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .results {
+            padding: 20px;
+            background: white;
+        }
+        
+        .result-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .vector-display {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 10px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .info-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin: 3px;
+        }
+        
+        .stereonet-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.3em;
+            }
+            
+            .tab-button {
+                font-size: 0.8em;
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Geological Plane Analysis Tool</h1>
+            <p>Ramón Zúñiga. I. de Geociencias, UNAM</p>
+        </div>
+        
+        <div class="controls">
+            <div class="input-group">
+                <label for="strike">Strike (°) - Clockwise from North</label>
+                <input type="range" id="strike" class="slider" min="0" max="360" value="45" step="1">
+                <div class="value-display" id="strike-value">45°</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="dip">Dip (°) - Downward from Horizontal</label>
+                <input type="range" id="dip" class="slider" min="0" max="90" value="60" step="1">
+                <div class="value-display" id="dip-value">60°</div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="vectors">Vectors</button>
+                <button class="tab-button" data-tab="stereonet">Stereonet</button>
+                <button class="tab-button" data-tab="3d">3D View</button>
+            </div>
+            
+            <div class="tab-content active" id="vectors">
+                <div class="result-section">
+                    <h3>📍 Orientation</h3>
+                    <div class="info-badge">Dip Direction: <span id="dip-direction">135°</span></div>
+                    <div class="info-badge">Pole Trend: <span id="pole-trend">135°</span></div>
+                    <div class="info-badge">Pole Plunge: <span id="pole-plunge">30°</span></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>🔴 Normal Vector</h3>
+                    <div class="vector-display" id="normal-vector">[0.0000, 0.0000, 0.0000]</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>🟢 Strike Vector</h3>
+                    <div class="vector-display" id="strike-vector">[0.0000, 0.0000, 0.0000]</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>🔵 Dip Vector</h3>
+                    <div class="vector-display" id="dip-vector">[0.0000, 0.0000, 0.0000]</div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="stereonet">
+                <div class="stereonet-container">
+                    <div class="canvas-container">
+                        <canvas id="stereonetCanvas"></canvas>
+                    </div>
+                </div>
+                <div class="result-section">
+                    <h3>ℹ️ Stereonet Info</h3>
+                    <p style="font-size: 0.9em; line-height: 1.6;">
+                        <strong>Red dot:</strong> Pole to plane (perpendicular)<br>
+                        <strong>Blue curve:</strong> Great circle (plane trace)<br>
+                        Lower hemisphere projection
+                    </p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="3d">
+                <div class="canvas-container">
+                    <canvas id="canvas3d"></canvas>
+                </div>
+                <div class="result-section">
+                    <h3>ℹ️ 3D View Controls</h3>
+                    <p style="font-size: 0.9em; line-height: 1.6;">
+                        <strong>Swipe:</strong> Rotate view<br>
+                        <strong>Blue plane:</strong> Geological plane<br>
+                        <strong>Vectors:</strong> Red (normal), Green (strike), Blue (dip)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // CORE CALCULATIONS
+        // ============================================================================
+        
+        function planeNormal(strike, dip) {
+            // Calculate strike and dip vectors first
+            const strikeVec = strikeVector(strike);
+            const dipVec = dipVector(strike, dip);
+            
+            // Normal is the cross product: strike × dip
+            // This gives a vector perpendicular to the plane
+            const nx = strikeVec[1] * dipVec[2] - strikeVec[2] * dipVec[1];
+            const ny = strikeVec[2] * dipVec[0] - strikeVec[0] * dipVec[2];
+            const nz = strikeVec[0] * dipVec[1] - strikeVec[1] * dipVec[0];
+            
+            // Normalize to unit vector
+            const mag = Math.sqrt(nx*nx + ny*ny + nz*nz);
+            let normal = [nx/mag, ny/mag, nz/mag];
+            
+            // Flip to point upward if pointing down
+            // (For visualization, we want normal pointing up from plane)
+            if (normal[2] < 0) {
+                normal = [-normal[0], -normal[1], -normal[2]];
+            }
+            
+            return normal;
+        }
+        
+        function strikeVector(strike) {
+            const strikeRad = strike * Math.PI / 180;
+            return [Math.sin(strikeRad), Math.cos(strikeRad), 0];
+        }
+        
+        function dipVector(strike, dip) {
+            const strikeRad = strike * Math.PI / 180;
+            const dipRad = dip * Math.PI / 180;
+            const dipDirRad = strikeRad + Math.PI / 2;
+            
+            const dx = Math.cos(dipRad) * Math.sin(dipDirRad);
+            const dy = Math.cos(dipRad) * Math.cos(dipDirRad);
+            const dz = -Math.sin(dipRad);
+            
+            return [dx, dy, dz];
+        }
+        
+        function dipDirection(strike) {
+            return (strike + 90) % 360;
+        }
+        
+        // ============================================================================
+        // UI UPDATES
+        // ============================================================================
+        
+        function updateVectors() {
+            const strike = parseInt(document.getElementById('strike').value);
+            const dip = parseInt(document.getElementById('dip').value);
+            
+            const normal = planeNormal(strike, dip);
+            const strikeVec = strikeVector(strike);
+            const dipVec = dipVector(strike, dip);
+            const dipDir = dipDirection(strike);
+            
+            document.getElementById('normal-vector').textContent = 
+                `[${normal[0].toFixed(4)}, ${normal[1].toFixed(4)}, ${normal[2].toFixed(4)}]`;
+            document.getElementById('strike-vector').textContent = 
+                `[${strikeVec[0].toFixed(4)}, ${strikeVec[1].toFixed(4)}, ${strikeVec[2].toFixed(4)}]`;
+            document.getElementById('dip-vector').textContent = 
+                `[${dipVec[0].toFixed(4)}, ${dipVec[1].toFixed(4)}, ${dipVec[2].toFixed(4)}]`;
+            
+            document.getElementById('dip-direction').textContent = `${dipDir}°`;
+            document.getElementById('pole-trend').textContent = `${dipDir}°`;
+            document.getElementById('pole-plunge').textContent = `${90 - dip}°`;
+            
+            drawStereonet();
+            draw3D();
+        }
+        
+        // ============================================================================
+        // STEREONET DRAWING
+        // ============================================================================
+        
+        function drawStereonet() {
+            const canvas = document.getElementById('stereonetCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth * 2;
+            const height = canvas.height = canvas.offsetHeight * 2;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.4;
+            
+            ctx.clearRect(0, 0, width, height);
+            ctx.scale(1, 1);
+            
+            const strike = parseInt(document.getElementById('strike').value);
+            const dip = parseInt(document.getElementById('dip').value);
+            
+            // Outer circle
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Concentric circles
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            for (let plunge of [30, 60, 80]) {
+                const r = radius * Math.sqrt(2) * Math.sin((45 - plunge / 2) * Math.PI / 180);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+            
+            // Cardinal directions
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('N', centerX, centerY - radius - 15);
+            ctx.fillText('S', centerX, centerY + radius + 30);
+            ctx.fillText('E', centerX + radius + 20, centerY + 8);
+            ctx.fillText('W', centerX - radius - 20, centerY + 8);
+            
+            // Great circle
+            const strikeRad = strike * Math.PI / 180;
+            const dipRad = dip * Math.PI / 180;
+            const dipDir = dipDirection(strike);
+            const dipDirRad = dipDir * Math.PI / 180;
+            
+            ctx.strokeStyle = '#0066ff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            
+            let firstPoint = true;
+            for (let angle = 0; angle <= 2 * Math.PI; angle += 0.05) {
+                const v1x = Math.sin(strikeRad);
+                const v1y = Math.cos(strikeRad);
+                const v2x = Math.cos(dipRad) * Math.sin(dipDirRad);
+                const v2y = Math.cos(dipRad) * Math.cos(dipDirRad);
+                const v2z = -Math.sin(dipRad);
+                
+                let px = Math.cos(angle) * v1x + Math.sin(angle) * v2x;
+                let py = Math.cos(angle) * v1y + Math.sin(angle) * v2y;
+                let pz = Math.sin(angle) * v2z;
+                
+                const norm = Math.sqrt(px * px + py * py + pz * pz);
+                px /= norm;
+                py /= norm;
+                pz /= norm;
+                
+                if (pz > 0) {
+                    px = -px;
+                    py = -py;
+                    pz = -pz;
+                }
+                
+                const plunge = Math.asin(-pz) * 180 / Math.PI;
+                const r = radius * Math.sqrt(2) * Math.sin((45 - plunge / 2) * Math.PI / 180);
+                const azimuth = Math.atan2(px, py);
+                
+                const x = centerX + r * Math.sin(azimuth);
+                const y = centerY - r * Math.cos(azimuth);
+                
+                if (firstPoint) {
+                    ctx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Pole (get actual normal vector and project to lower hemisphere)
+            const normal = planeNormal(strike, dip);
+            
+            // For lower hemisphere, flip if pointing up
+            let poleNormal = normal;
+            if (normal[2] > 0) {
+                poleNormal = [-normal[0], -normal[1], -normal[2]];
+            }
+            
+            // Calculate pole position from the normal vector
+            const poleTrendRad = Math.atan2(poleNormal[0], poleNormal[1]);
+            const polePlungeRad = Math.asin(-poleNormal[2]);  // Negative because it points down
+            const polePlungeDeg = polePlungeRad * 180 / Math.PI;
+            
+            const poleR = radius * Math.sqrt(2) * Math.sin((45 - polePlungeDeg / 2) * Math.PI / 180);
+            const poleX = centerX + poleR * Math.sin(poleTrendRad);
+            const poleY = centerY - poleR * Math.cos(poleTrendRad);
+            
+            ctx.fillStyle = '#ff0000';
+            ctx.strokeStyle = '#8b0000';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(poleX, poleY, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+        }
+        
+        // ============================================================================
+        // 3D DRAWING
+        // ============================================================================
+        
+        let rotation3D = { x: 70, y: 45 };  // Higher x angle to look more from above
+        let lastTouch = null;
+        
+        function draw3D() {
+            const canvas = document.getElementById('canvas3d');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth * 2;
+            const height = canvas.height = canvas.offsetHeight * 2;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const scale = Math.min(width, height) * 0.15;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const strike = parseInt(document.getElementById('strike').value);
+            const dip = parseInt(document.getElementById('dip').value);
+            
+            const normal = planeNormal(strike, dip);
+            const strikeVec = strikeVector(strike);
+            const dipVec = dipVector(strike, dip);
+            
+            // Rotation matrices
+            function rotateX(p, angle) {
+                const rad = angle * Math.PI / 180;
+                return [
+                    p[0],
+                    p[1] * Math.cos(rad) - p[2] * Math.sin(rad),
+                    p[1] * Math.sin(rad) + p[2] * Math.cos(rad)
+                ];
+            }
+            
+            function rotateY(p, angle) {
+                const rad = angle * Math.PI / 180;
+                return [
+                    p[0] * Math.cos(rad) + p[2] * Math.sin(rad),
+                    p[1],
+                    -p[0] * Math.sin(rad) + p[2] * Math.cos(rad)
+                ];
+            }
+            
+            function project(p) {
+                let rotated = rotateX(p, rotation3D.x);
+                rotated = rotateY(rotated, rotation3D.y);
+                return [
+                    centerX + rotated[0] * scale,
+                    centerY - rotated[2] * scale
+                ];
+            }
+            
+            // Draw plane
+            const planePoints = [
+                [-1.5, -1.5], [1.5, -1.5], [1.5, 1.5], [-1.5, 1.5]
+            ].map(([u, v]) => [
+                u * strikeVec[0] + v * dipVec[0],
+                u * strikeVec[1] + v * dipVec[1],
+                u * strikeVec[2] + v * dipVec[2]
+            ]);
+            
+            ctx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+            ctx.strokeStyle = '#0066ff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            const projected = planePoints.map(project);
+            ctx.moveTo(projected[0][0], projected[0][1]);
+            for (let i = 1; i < projected.length; i++) {
+                ctx.lineTo(projected[i][0], projected[i][1]);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Draw horizontal reference plane at z=0
+            const hSize = 2.0;
+            const hGrid = 5;
+            const hStep = (2 * hSize) / hGrid;
+            
+            ctx.strokeStyle = 'rgba(128, 128, 128, 0.3)';
+            ctx.lineWidth = 1;
+            
+            // Draw grid lines parallel to X
+            for (let i = 0; i <= hGrid; i++) {
+                const y = -hSize + i * hStep;
+                const start = project([-hSize, y, 0]);
+                const end = project([hSize, y, 0]);
+                ctx.beginPath();
+                ctx.moveTo(start[0], start[1]);
+                ctx.lineTo(end[0], end[1]);
+                ctx.stroke();
+            }
+            
+            // Draw grid lines parallel to Y
+            for (let i = 0; i <= hGrid; i++) {
+                const x = -hSize + i * hStep;
+                const start = project([x, -hSize, 0]);
+                const end = project([x, hSize, 0]);
+                ctx.beginPath();
+                ctx.moveTo(start[0], start[1]);
+                ctx.lineTo(end[0], end[1]);
+                ctx.stroke();
+            }
+            
+            // Fill the horizontal plane with semi-transparent gray
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.15)';
+            const hCorners = [
+                [-hSize, -hSize, 0], [hSize, -hSize, 0], 
+                [hSize, hSize, 0], [-hSize, hSize, 0]
+            ].map(project);
+            ctx.beginPath();
+            ctx.moveTo(hCorners[0][0], hCorners[0][1]);
+            for (let i = 1; i < hCorners.length; i++) {
+                ctx.lineTo(hCorners[i][0], hCorners[i][1]);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw axes
+            function drawAxis(vec, color, label) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.4;
+                const start = project([0, 0, 0]);
+                const end = project([vec[0] * 1.2, vec[1] * 1.2, vec[2] * 1.2]);
+                ctx.beginPath();
+                ctx.moveTo(start[0], start[1]);
+                ctx.lineTo(end[0], end[1]);
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = color;
+                ctx.font = '20px Arial';
+                ctx.fillText(label, end[0] + 10, end[1]);
+            }
+            
+            drawAxis([1, 0, 0], '#999', 'E');
+            drawAxis([0, 1, 0], '#999', 'N');
+            drawAxis([0, 0, 1], '#999', 'Up');
+            
+            // Draw vectors
+            function drawVector(vec, color, label) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 5;
+                const start = project([0, 0, 0]);
+                const end = project(vec);
+                
+                ctx.beginPath();
+                ctx.moveTo(start[0], start[1]);
+                ctx.lineTo(end[0], end[1]);
+                ctx.stroke();
+                
+                // Arrow head
+                const angle = Math.atan2(end[1] - start[1], end[0] - start[0]);
+                ctx.beginPath();
+                ctx.moveTo(end[0], end[1]);
+                ctx.lineTo(end[0] - 15 * Math.cos(angle - Math.PI/6), end[1] - 15 * Math.sin(angle - Math.PI/6));
+                ctx.lineTo(end[0] - 15 * Math.cos(angle + Math.PI/6), end[1] - 15 * Math.sin(angle + Math.PI/6));
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+                
+                ctx.fillStyle = color;
+                ctx.font = 'bold 22px Arial';
+                ctx.fillText(label, end[0] + 15, end[1] - 15);
+            }
+            
+            drawVector(normal, '#ff0000', 'N');
+            drawVector(strikeVec, '#00aa00', 'S');
+            drawVector(dipVec, '#0066ff', 'D');
+        }
+        
+        // Touch controls for 3D
+        const canvas3d = document.getElementById('canvas3d');
+        canvas3d.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+        
+        canvas3d.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (lastTouch) {
+                const dx = e.touches[0].clientX - lastTouch.x;
+                const dy = e.touches[0].clientY - lastTouch.y;
+                rotation3D.y += dx * 0.5;
+                rotation3D.x += dy * 0.5;
+                rotation3D.x = Math.max(-90, Math.min(90, rotation3D.x));
+                lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                draw3D();
+            }
+        });
+        
+        canvas3d.addEventListener('touchend', () => {
+            lastTouch = null;
+        });
+        
+        // ============================================================================
+        // TAB SWITCHING
+        // ============================================================================
+        
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
+                
+                if (button.dataset.tab === 'stereonet') {
+                    setTimeout(drawStereonet, 100);
+                } else if (button.dataset.tab === '3d') {
+                    setTimeout(draw3D, 100);
+                }
+            });
+        });
+        
+        // ============================================================================
+        // SLIDER CONTROLS
+        // ============================================================================
+        
+        document.getElementById('strike').addEventListener('input', (e) => {
+            document.getElementById('strike-value').textContent = e.target.value + '°';
+            updateVectors();
+        });
+        
+        document.getElementById('dip').addEventListener('input', (e) => {
+            document.getElementById('dip-value').textContent = e.target.value + '°';
+            updateVectors();
+        });
+        
+        // Initialize
+        updateVectors();
+    </script>
+</body>
+</html>
