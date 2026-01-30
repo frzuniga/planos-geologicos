@@ -3,7 +3,9 @@ Interactive application specifically designed for mobile devices that allows stu
 
 **Main Features**
 
-The developed application (plano_geologico_movil.html) is completely self-contained and runs on any smartphone or modern browser without requiring installation or internet connection once loaded. It consists of three interactive modules:
+The application is completely self-contained and runs on any smartphone or modern browser without requiring installation or internet connection once loaded. Spanish (plano_geologico_movil.html) and English (geological_plane_mobile.html) versions 
+are provided.
+It consists of three interactive modules:
 
 **1. Vectors Module**
 
