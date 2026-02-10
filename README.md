@@ -8,7 +8,6 @@ are provided.
 It consists of three interactive modules:
 
 **1. Vectors Module**
-
 Displays in real-time:
 • Normal vector (perpendicular to the plane) - The most fundamental representation
 • Strike vector (horizontal, along the strike line)
@@ -16,7 +15,6 @@ Displays in real-time:
 • Calculated parameters: dip direction, pole trend, pole plunge
 
 **2. Stereographic Projection**
-
 Simultaneously visualizes:
 • Great circle (geological plane trace)
 • Pole to plane (projection of the normal vector)
@@ -24,7 +22,6 @@ Simultaneously visualizes:
 • Clearly marked cardinal directions
 
 **3. Interactive 3D Visualization**
-
 Allows:
 • Touch rotation of the complete scene
 • Geological plane visualization with realistic shading
