@@ -1,4 +1,4 @@
-# Plan_Geol_mobile
+# Geol_Plane_mobile
 Interactive application specifically designed for mobile devices that allows students and professors to visualize in real-time the relationship between strike and dip parameters with their vector representations and stereographic projections.
 
 **Main Features**
