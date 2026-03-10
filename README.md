@@ -1,4 +1,4 @@
-# Plan_Geol_movil
+# Plan_Geol_mobile
 Interactive application specifically designed for mobile devices that allows students and professors to visualize in real-time the relationship between strike and dip parameters with their vector representations and stereographic projections.
 
 **Main Features**
@@ -29,7 +29,7 @@ Allows:
 • All relevant vectors in color code
 • Cartesian reference axes (East, North, Up)
 
-# plano_geologico_movil
+# Plan_Geol_movil
 Aplicación interactiva diseñada específicamente para dispositivos móviles que permite a estudiantes y profesores visualizar en tiempo real la relación entre los parámetros de rumbo y buzamiento con sus representaciones vectoriales y proyecciones estereográficas.
 
 **Características Principales**
